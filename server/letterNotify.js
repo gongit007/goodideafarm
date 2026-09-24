@@ -8,7 +8,13 @@ function notifyEmail() {
 export async function notifyNewLetter(letter) {
   const apiKey = String(process.env.RESEND_API_KEY || "").trim();
   const to = notifyEmail();
-  if (!apiKey || !to) return { skipped: true };
+  if (!apiKey || !to) {
+    console.warn("[letter-notify] skipped", {
+      hasKey: Boolean(apiKey),
+      hasTo: Boolean(to),
+    });
+    return { skipped: true };
+  }
 
   const subject = `[${farm.name}] ${letter.name} 님 편지`;
   const text = [

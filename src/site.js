@@ -15,8 +15,20 @@ export const SITE_ROUTES = [
   "/credits",
 ];
 
+function readSiteUrlEnv() {
+  const fromVite =
+    typeof import.meta !== "undefined" && import.meta.env
+      ? import.meta.env.VITE_SITE_URL
+      : "";
+  if (fromVite) return String(fromVite);
+  if (typeof process !== "undefined" && process.env.VITE_SITE_URL) {
+    return String(process.env.VITE_SITE_URL);
+  }
+  return "";
+}
+
 export function siteOrigin() {
-  const env = String(import.meta.env.VITE_SITE_URL || "").replace(/\/$/, "");
+  const env = readSiteUrlEnv().replace(/\/$/, "");
   if (env) return env;
   if (typeof window !== "undefined" && window.location?.origin) return window.location.origin;
   return "";
