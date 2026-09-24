@@ -4,4 +4,9 @@ dist
 *.log
 data/letters.json
 .vercel
-.env*
+.env
+.env.local
+.env.*.local
+!.env.example
+.agents/
+skills-lock.json
