@@ -44,8 +44,8 @@ export default function Privacy() {
         <div className="privacy-block">
           <h2>4. 스팸 방지</h2>
           <p>
-            편지 남용을 막기 위해 IP·연락처 기준 전송 횟수를 제한합니다(1시간 5통,
-            동일 연락처 하루 8통). 자동 수집을 막는 숨김 필드도 사용합니다.
+            편지 남용을 막기 위해 IP·연락처 기준 전송 횟수를 제한합니다(1시간 10통,
+            동일 연락처 하루 12통). 자동 수집을 막는 숨김 필드도 사용합니다.
           </p>
         </div>
         <div className="privacy-block">
