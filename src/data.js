@@ -7,6 +7,19 @@ export const farm = {
   phoneHref: "tel:010-8215-0706",
   hours: "매일 09:00 – 18:00 · 점심 12:00 – 13:00",
   region: "제주특별자치도 애월읍",
+  address: {
+    full: "제주특별자치도 제주시 애월읍",
+    detail: "",
+    note: "방문·직판은 전화 예약 후 상세 주소를 안내합니다.",
+  },
+  notifyEmail: "",
+  business: {
+    name: "좋은생각 귤농수산",
+    representative: "전홍구",
+    registrationNumber: "",
+    mailOrderNumber: "",
+    email: "",
+  },
   slogan: "좋은 귤은, 좋은 생각에서 자랍니다",
   tagline: "극조생 · 조생 · 비가림하우스 · 레드향",
   harvestDate: "2026. 9. 21",
@@ -34,6 +47,12 @@ export const nav = [
   { to: "/contact", label: "편지" },
 ];
 
+export function smartStoreSearchUrl(query) {
+  const base = String(farm.smartStoreUrl || "").replace(/\/$/, "");
+  if (!base) return "";
+  return `${base}/search?q=${encodeURIComponent(query)}`;
+}
+
 export function productStoreUrl(product) {
   const own = String(product?.storeUrl || "").trim();
   if (own) return own;
@@ -59,7 +78,7 @@ export const products = [
       "극조생은 제주 감귤 시즌의 첫 문장입니다. 10월 중순부터 색이 오르고 11월 초면 수확이 끝납니다. 착색을 서두르지 않고, 제철이 왔을 때만 담습니다.",
     points: ["시즌 첫 출하", "얇은 껍질", "아침 간식"],
     image: "/images/citrus-green.jpg",
-    storeUrl: "",
+    storeUrl: "https://smartstore.naver.com/gongsmartstore/search?q=%EA%B7%B9%EC%A1%B0%EC%83%9D",
   },
   {
     id: "josaeng",
@@ -79,7 +98,7 @@ export const products = [
       "햇살과 해풍을 머금고 노지에서 천천히 익힙니다. 아이 간식부터 택배 선물까지, 가장 많이 찾는 품종입니다.",
     points: ["대표 노지", "풍부한 과즙", "직판 · 택배"],
     image: "/images/citrus-close-2.jpg",
-    storeUrl: "",
+    storeUrl: "https://smartstore.naver.com/gongsmartstore/search?q=%EC%A1%B0%EC%83%9D",
   },
   {
     id: "bigarim",
@@ -99,7 +118,7 @@ export const products = [
       "가온 없이 비닐만 씌웁니다. 눈비를 막고 물을 아끼니 당도가 오릅니다. 1~2월, 한 철 더 깊은 감귤입니다.",
     points: ["수분 조절", "겨울 제철", "선물용"],
     image: "/images/citrus-close-3.jpg",
-    storeUrl: "",
+    storeUrl: "https://smartstore.naver.com/gongsmartstore/search?q=%EB%B9%84%EA%B0%80%EB%A6%BC",
   },
   {
     id: "redhyang",
@@ -119,7 +138,7 @@ export const products = [
       "껍질이 진한 주홍빛일 때 수확합니다. 속이 꽉 찬 열매만 골라 명절과 단체 선물 상자에 담습니다.",
     points: ["만감류", "높은 당도", "명절 선물"],
     image: "/images/citrus-tree.jpg",
-    storeUrl: "",
+    storeUrl: "https://smartstore.naver.com/gongsmartstore/search?q=%EB%A0%88%EB%93%9C%ED%96%A5",
   },
 ];
 

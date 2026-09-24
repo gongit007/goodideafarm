@@ -1,9 +1,12 @@
 import { Link } from "react-router-dom";
-import { farm, products, stories, experience, faqs, vistas, citrusShots } from "../data";
+import { useBrix } from "../BrixContext.jsx";
+import { farm, stories, experience, faqs, vistas, citrusShots } from "../data";
 import { BranchDecor, BasketMark } from "../components/Icons";
 import CoverSlides from "../components/CoverSlides";
+import OptimizedImage from "../components/OptimizedImage.jsx";
 
 export default function Home() {
+  const { products } = useBrix();
   return (
     <>
       <section className="cover">
@@ -38,12 +41,12 @@ export default function Home() {
 
       <section className="vista wrap" aria-label="제주와 감귤">
         <figure className="vista-hero">
-          <img src={vistas[0].src} alt={vistas[0].alt} />
+          <OptimizedImage src={vistas[0].src} alt={vistas[0].alt} priority />
           <figcaption>{vistas[0].caption}</figcaption>
         </figure>
         {citrusShots.slice(0, 4).map((shot) => (
           <figure key={shot.src}>
-            <img src={shot.src} alt={shot.alt} />
+            <OptimizedImage src={shot.src} alt={shot.alt} width={320} height={240} />
           </figure>
         ))}
       </section>
@@ -68,7 +71,7 @@ export default function Home() {
           {products.map((p) => (
             <li key={p.id}>
               <Link to="/brix">
-                <img className="nb-thumb" src={p.image} alt="" />
+                <OptimizedImage className="nb-thumb" src={p.image} alt="" width={72} height={72} />
                 <span className="nb-no">{p.no}</span>
                 <span className="nb-name">
                   {p.name}
@@ -102,7 +105,7 @@ export default function Home() {
         <div className="jeju-grid">
           {vistas.map((v) => (
             <figure key={v.src}>
-              <img src={v.src} alt={v.alt} />
+              <OptimizedImage src={v.src} alt={v.alt} />
               <figcaption>{v.caption}</figcaption>
             </figure>
           ))}
@@ -140,7 +143,7 @@ export default function Home() {
               </Link>
             </div>
             <div className="chapter-visual" style={{ "--tone": p.color }}>
-              <img src={p.image} alt={p.name} />
+              <OptimizedImage src={p.image} alt={p.name} />
             </div>
           </article>
         ))}
@@ -148,7 +151,7 @@ export default function Home() {
 
       <section className="letter wrap">
         <div className="letter-photo">
-          <img src="/images/brand-farmer.jpg" alt="좋은생각 귤농수산 브랜드" />
+          <OptimizedImage src="/images/brand-farmer.jpg" alt="좋은생각 귤농수산 브랜드" />
         </div>
         <div className="letter-body">
           <p className="eyebrow">Farmer</p>
@@ -195,7 +198,7 @@ export default function Home() {
           </Link>
         </div>
         <figure className="ticket-photo">
-          <img src="/images/orchard.jpg" alt="감귤 따기 체험 밭" />
+          <OptimizedImage src="/images/orchard.jpg" alt="감귤 따기 체험 밭" />
         </figure>
       </section>
 

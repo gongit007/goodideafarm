@@ -13,6 +13,8 @@ import Contact from "./pages/Contact.jsx";
 import Admin from "./pages/Admin.jsx";
 import Credits from "./pages/Credits.jsx";
 import Privacy from "./pages/Privacy.jsx";
+import Terms from "./pages/Terms.jsx";
+import NotFound from "./pages/NotFound.jsx";
 import Seo from "./components/Seo.jsx";
 
 function ScrollTop() {
@@ -42,6 +44,8 @@ export default function App() {
           <Route path="/admin" element={<Admin />} />
           <Route path="/credits" element={<Credits />} />
           <Route path="/privacy" element={<Privacy />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
       <Footer />

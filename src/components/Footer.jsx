@@ -25,7 +25,13 @@ export default function Footer() {
             <a href={farm.phoneHref}>{farm.phone}</a>
           </p>
           <p>{farm.hours}</p>
-          <p>{farm.region}</p>
+          <p>{farm.address.full}</p>
+          {farm.business.registrationNumber ? (
+            <p>사업자 {farm.business.registrationNumber}</p>
+          ) : null}
+          {farm.business.mailOrderNumber ? (
+            <p>통신판매 {farm.business.mailOrderNumber}</p>
+          ) : null}
         </address>
         <div className="colo-seal" aria-hidden="true">
           <span>産地</span>
@@ -36,6 +42,10 @@ export default function Footer() {
         © {new Date().getFullYear()} {farm.name} · 시세는 작황에 따라 달라질 수 있습니다.{" "}
         <Link to="/privacy" className="footer-quiet">
           개인정보
+        </Link>
+        {" · "}
+        <Link to="/terms" className="footer-quiet">
+          이용약관
         </Link>
         {" · "}
         <Link to="/credits" className="footer-quiet">

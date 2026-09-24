@@ -28,6 +28,7 @@ export function farmJsonLd() {
     },
     address: {
       "@type": "PostalAddress",
+      streetAddress: farm.address.full,
       addressRegion: "제주특별자치도",
       addressLocality: "애월읍",
       addressCountry: farm.geo.country,
@@ -195,8 +196,8 @@ const pages = {
     ],
   },
   "/admin": {
-    title: pageTitle("편지함"),
-    description: "좋은생각 귤농수산 관리자 편지함.",
+    title: pageTitle("농장 관리"),
+    description: "좋은생각 귤농수산 관리자 — 편지함, 당도, 통계.",
     path: "/admin",
     robots: "noindex,nofollow",
     crumbs: [
@@ -222,7 +223,23 @@ const pages = {
       { name: "개인정보 처리방침", path: "/privacy" },
     ],
   },
+  "/terms": {
+    title: pageTitle("이용약관"),
+    description: `${farm.name} 웹사이트·농장 방문·주문·배송·체험 이용에 관한 약관입니다.`,
+    path: "/terms",
+    crumbs: [
+      { name: "홈", path: "/" },
+      { name: "이용약관", path: "/terms" },
+    ],
+  },
 };
+
+export function isKnownPath(pathname) {
+  if (pages[pathname]) return true;
+  const productMatch = pathname.match(/^\/shop\/([^/]+)$/);
+  if (productMatch && products.some((p) => p.id === productMatch[1])) return true;
+  return false;
+}
 
 export function seoForPath(pathname) {
   const productMatch = pathname.match(/^\/shop\/([^/]+)$/);
@@ -242,6 +259,23 @@ export function seoForPath(pathname) {
       keywords: `${product.name}, 제주 ${product.name}, ${product.hanja}, 제주 감귤, 좋은생각 귤농수산`,
       type: "product",
       jsonLd: graph([farmJsonLd(), websiteJsonLd(), productJsonLd(product), breadcrumbJsonLd(crumbs)]),
+    };
+  }
+
+  if (!isKnownPath(pathname)) {
+    return {
+      title: pageTitle("페이지를 찾을 수 없습니다"),
+      description: "요청하신 페이지가 없거나 주소가 변경되었습니다.",
+      path: pathname,
+      robots: "noindex,nofollow",
+      crumbs: [
+        { name: "홈", path: "/" },
+        { name: "404", path: pathname },
+      ],
+      image: DEFAULT_OG_IMAGE,
+      keywords: farm.keywords,
+      type: "website",
+      jsonLd: graph([farmJsonLd(), websiteJsonLd()]),
     };
   }
 

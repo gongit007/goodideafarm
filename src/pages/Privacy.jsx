@@ -42,7 +42,14 @@ export default function Privacy() {
           </p>
         </div>
         <div className="privacy-block">
-          <h2>4. 제3자 제공</h2>
+          <h2>4. 스팸 방지</h2>
+          <p>
+            편지 남용을 막기 위해 IP·연락처 기준 전송 횟수를 제한합니다(1시간 5통,
+            동일 연락처 하루 8통). 자동 수집을 막는 숨김 필드도 사용합니다.
+          </p>
+        </div>
+        <div className="privacy-block">
+          <h2>5. 제3자 제공</h2>
           <p>
             법령에 따른 경우를 제외하고, 수집한 개인정보를 외부에 제공하거나 판매하지
             않습니다. 온라인 결제는 네이버 스마트스토어에서 별도로 진행되며, 해당
@@ -50,14 +57,14 @@ export default function Privacy() {
           </p>
         </div>
         <div className="privacy-block">
-          <h2>5. 이용자 권리</h2>
+          <h2>6. 이용자 권리</h2>
           <p>
             본인의 문의 내용 열람·수정·삭제를 요청하실 수 있습니다. {farm.phone}으로
             연락해 주시면 확인 후 처리합니다.
           </p>
         </div>
         <div className="privacy-block">
-          <h2>6. 문의</h2>
+          <h2>7. 문의</h2>
           <p>
             개인정보 관련 문의: {farm.name} · {farm.ownerTitle} {farm.owner} ·{" "}
             <a href={farm.phoneHref}>{farm.phone}</a>

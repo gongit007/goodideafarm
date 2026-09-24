@@ -5,6 +5,8 @@ import {
   readJsonBody,
   sendJson,
 } from "./lettersCore.js";
+import { notifyNewLetter } from "./letterNotify.js";
+import { checkLetterRateLimit } from "./rateLimit.js";
 import { loadLetters, saveLetters } from "./lettersStore.js";
 
 function storageError(res) {
@@ -19,14 +21,25 @@ export async function handleCreateLetter(req, res) {
   try {
     const body = await readJsonBody(req);
     const built = buildLetter(body);
+    if (built.spam) {
+      sendJson(res, 201, { ok: true, id: "ltr_spam" });
+      return;
+    }
     if (built.error) {
       sendJson(res, 400, { ok: false, error: built.error });
+      return;
+    }
+
+    const limited = await checkLetterRateLimit(req, built.letter.phone);
+    if (limited) {
+      sendJson(res, 429, { ok: false, error: limited });
       return;
     }
 
     const list = await loadLetters();
     list.unshift(built.letter);
     await saveLetters(list);
+    notifyNewLetter(built.letter).catch(() => {});
     sendJson(res, 201, { ok: true, id: built.letter.id });
   } catch (error) {
     if (error.message === "KV_NOT_CONFIGURED") {

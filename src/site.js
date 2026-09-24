@@ -11,6 +11,7 @@ export const SITE_ROUTES = [
   "/experience",
   "/contact",
   "/privacy",
+  "/terms",
   "/credits",
 ];
 

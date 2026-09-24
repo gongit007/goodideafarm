@@ -1,8 +1,11 @@
 import { Link } from "react-router-dom";
-import { farm, products } from "../data";
+import { useBrix } from "../BrixContext.jsx";
+import { farm } from "../data";
 import { PageBanner, StoreBuyLink, StoreHint, StoreHomeLink } from "../components/Ui";
+import OptimizedImage from "../components/OptimizedImage.jsx";
 
 export default function Buy() {
+  const { products } = useBrix();
   return (
     <>
       <PageBanner
@@ -15,7 +18,7 @@ export default function Buy() {
         <ul className="buy-cards">
           {products.map((p) => (
             <li key={p.id} className="buy-card">
-              <img src={p.image} alt={p.name} />
+              <OptimizedImage src={p.image} alt={p.name} width={320} height={200} />
               <div className="buy-card-meta">
                 <p className="nb-no">{p.no}</p>
                 <h2>

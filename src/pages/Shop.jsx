@@ -1,8 +1,10 @@
 import { Link } from "react-router-dom";
-import { products } from "../data";
+import { useBrix } from "../BrixContext.jsx";
 import { PageBanner, StoreHomeLink } from "../components/Ui";
+import OptimizedImage from "../components/OptimizedImage.jsx";
 
 export default function Shop() {
+  const { products } = useBrix();
   return (
     <>
       <PageBanner
@@ -14,7 +16,7 @@ export default function Shop() {
       <div className="wrap season-table">
         {products.map((p) => (
           <Link key={p.id} to={`/shop/${p.id}`} className="season-row">
-            <img src={p.image} alt={p.name} />
+            <OptimizedImage src={p.image} alt={p.name} width={88} height={88} />
             <span className="nb-no">{p.no}</span>
             <span>
               <strong>{p.name}</strong>

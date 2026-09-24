@@ -3,6 +3,7 @@ dist
 .DS_Store
 *.log
 data/letters.json
+data/brix.json
 .vercel
 .env
 .env.local

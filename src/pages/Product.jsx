@@ -1,9 +1,12 @@
 import { Link, useParams } from "react-router-dom";
-import { products, farm } from "../data";
+import { useBrix } from "../BrixContext.jsx";
+import { farm } from "../data";
 import { PageBanner, StoreBuyLink, StoreHint } from "../components/Ui";
+import OptimizedImage from "../components/OptimizedImage.jsx";
 
 export default function Product() {
   const { id } = useParams();
+  const { products } = useBrix();
   const product = products.find((p) => p.id === id) || products[0];
 
   return (
@@ -11,7 +14,7 @@ export default function Product() {
       <PageBanner kicker={`제철 ${product.no}`} title={product.name} desc={product.hanja} />
       <article className="split wrap product-sheet">
         <div className="swatch" style={{ background: product.color }}>
-          <img src={product.image} alt={product.name} />
+          <OptimizedImage src={product.image} alt={product.name} priority />
         </div>
         <div>
           <p className="eyebrow">{product.season}</p>

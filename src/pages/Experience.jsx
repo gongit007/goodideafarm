@@ -2,6 +2,8 @@ import { Link } from "react-router-dom";
 import { experience, farm } from "../data";
 import { PageBanner } from "../components/Ui";
 import { BasketMark } from "../components/Icons";
+import MapEmbed from "../components/MapEmbed.jsx";
+import OptimizedImage from "../components/OptimizedImage.jsx";
 
 export default function Experience() {
   return (
@@ -38,12 +40,12 @@ export default function Experience() {
           </a>
         </div>
         <figure className="ticket-photo">
-          <img src="/images/jeju-olle.jpg" alt="제주 올레 해안" />
+          <OptimizedImage src="/images/jeju-olle.jpg" alt="제주 올레 해안" />
         </figure>
       </section>
       <section className="split wrap">
         <figure className="frame">
-          <img src="/images/jeju-coast.jpg" alt="제주 중문 주상절리" />
+          <OptimizedImage src="/images/jeju-coast.jpg" alt="제주 중문 주상절리" />
           <figcaption>체험이 끝나면, 제주의 바다가 가깝습니다</figcaption>
         </figure>
         <section className="note-list">
@@ -60,6 +62,18 @@ export default function Experience() {
             단체 일정을 편지로
           </Link>
         </section>
+      </section>
+      <section className="split wrap farm-location">
+        <MapEmbed title="감귤타기 · 농장 위치" />
+        <div>
+          <p className="eyebrow">Location</p>
+          <h2>찾아오시는 길</h2>
+          <p className="lede">{farm.address.full}</p>
+          <p>{farm.address.note}</p>
+          <a className="ink-btn" href={farm.phoneHref}>
+            방문 전 전화
+          </a>
+        </div>
       </section>
     </>
   );

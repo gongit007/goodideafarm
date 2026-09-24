@@ -1,9 +1,12 @@
 import { farm, productStoreUrl } from "../data";
+import OptimizedImage from "./OptimizedImage.jsx";
 
 export function PageBanner({ kicker, title, desc, image }) {
   return (
     <section className={`banner ${image ? "has-photo" : ""}`}>
-      {image && <img className="banner-photo" src={image} alt={title} />}
+      {image && (
+        <OptimizedImage className="banner-photo" src={image} alt={title} priority />
+      )}
       <div className="banner-copy">
         <p className="eyebrow">{kicker}</p>
         <h1>{title}</h1>

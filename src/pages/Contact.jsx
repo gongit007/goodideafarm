@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { farm, products } from "../data";
 import { PageBanner } from "../components/Ui";
+import BusinessInfo from "../components/BusinessInfo.jsx";
 
 export default function Contact() {
   const [params] = useSearchParams();
@@ -10,6 +11,7 @@ export default function Contact() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [consent, setConsent] = useState(false);
+  const [honeypot, setHoneypot] = useState("");
   const [form, setForm] = useState({
     name: "",
     phone: "",
@@ -34,7 +36,7 @@ export default function Contact() {
       const res = await fetch("/api/letters", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, website: honeypot }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || "편지를 저장하지 못했습니다.");
@@ -68,6 +70,15 @@ export default function Contact() {
             </div>
           ) : (
             <>
+              <label className="hp-field" aria-hidden="true">
+                웹사이트
+                <input
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={honeypot}
+                  onChange={(e) => setHoneypot(e.target.value)}
+                />
+              </label>
               <label>
                 이름
                 <input
@@ -80,6 +91,9 @@ export default function Contact() {
                 연락처
                 <input
                   required
+                  inputMode="tel"
+                  autoComplete="tel"
+                  placeholder="010-0000-0000"
                   value={form.phone}
                   onChange={(e) => setForm({ ...form, phone: e.target.value })}
                 />
@@ -133,8 +147,12 @@ export default function Contact() {
           <p>{farm.name}</p>
           <p>{farm.phone}</p>
           <p>{farm.hours}</p>
-          <p>{farm.region}</p>
+          <p>{farm.address.full}</p>
+          <p>{farm.address.note}</p>
         </aside>
+      </section>
+      <section className="wrap contact-business">
+        <BusinessInfo />
       </section>
     </>
   );

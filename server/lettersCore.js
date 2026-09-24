@@ -74,6 +74,11 @@ export function readJsonBody(req) {
 }
 
 export function buildLetter(body) {
+  const honeypot = String(body.website || body._hp || "").trim();
+  if (honeypot) {
+    return { spam: true };
+  }
+
   const name = String(body.name || "").trim();
   const phone = String(body.phone || "").trim();
   const item = String(body.item || "").trim();

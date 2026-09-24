@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { heroSlides } from "../data";
+import OptimizedImage from "./OptimizedImage.jsx";
 
 const INTERVAL_MS = 4500;
 
@@ -20,14 +21,13 @@ export default function CoverSlides() {
   return (
     <figure className="cover-plate">
       <div className="cover-slides" aria-roledescription="carousel" aria-label="농장 사진">
-        {heroSlides.map((slide, i) => (
-          <img
-            key={slide.src}
-            src={slide.src}
-            alt={i === index ? slide.alt : ""}
-            className={i === index ? "is-on" : ""}
-          />
-        ))}
+        <OptimizedImage
+          key={current.src}
+          src={current.src}
+          alt={current.alt}
+          className="is-on"
+          priority
+        />
       </div>
       <figcaption>
         <span className="cover-slide-no">{String(index + 1).padStart(2, "0")}</span>
