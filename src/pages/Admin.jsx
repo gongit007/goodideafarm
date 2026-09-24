@@ -117,10 +117,6 @@ export default function Admin() {
                 required
               />
             </label>
-            <p className="store-hint">
-              Vercel에 설정된 <strong>ADMIN_KEY</strong>와 같은 값을 입력하세요. 예전 기본
-              암호(goodidea0706)는 더 이상 사용되지 않습니다.
-            </p>
             {error && <p className="store-hint">{error}</p>}
             <button className="ink-btn" type="submit">
               편지함 열기
