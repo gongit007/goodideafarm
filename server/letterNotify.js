@@ -24,7 +24,7 @@ export async function notifyNewLetter(letter) {
   ].join("\n");
 
   const from = String(
-    process.env.RESEND_FROM || `${farm.name} <onboarding@resend.dev>`
+    process.env.RESEND_FROM || "onboarding@resend.dev"
   ).trim();
 
   const res = await fetch("https://api.resend.com/emails", {
