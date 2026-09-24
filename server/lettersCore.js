@@ -15,10 +15,32 @@ export function itemName(id) {
   return products.find((p) => p.id === id)?.name || "제철 상담";
 }
 
+function readAdminHeader(req) {
+  const raw =
+    req.headers["x-admin-key"] ||
+    req.headers["X-Admin-Key"] ||
+    req.headers["X-ADMIN-KEY"] ||
+    "";
+  return String(Array.isArray(raw) ? raw[0] : raw).trim();
+}
+
 export function isAdmin(req) {
   const key = getAdminKey();
   if (!key) return false;
-  return (req.headers["x-admin-key"] || "") === key;
+  const provided = readAdminHeader(req);
+  if (!provided) return false;
+  return provided === key;
+}
+
+export function adminAuthError(req) {
+  const key = getAdminKey();
+  if (!key) {
+    return "관리자 암호가 서버에 설정되지 않았습니다. Vercel ADMIN_KEY를 확인해 주세요.";
+  }
+  if (!readAdminHeader(req)) {
+    return "관리자 암호를 입력해 주세요.";
+  }
+  return "암호가 맞지 않습니다.";
 }
 
 export function sendJson(res, status, body) {

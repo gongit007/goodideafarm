@@ -1,4 +1,10 @@
-import { buildLetter, isAdmin, readJsonBody, sendJson } from "./lettersCore.js";
+import {
+  adminAuthError,
+  buildLetter,
+  isAdmin,
+  readJsonBody,
+  sendJson,
+} from "./lettersCore.js";
 import { loadLetters, saveLetters } from "./lettersStore.js";
 
 function storageError(res) {
@@ -33,7 +39,7 @@ export async function handleCreateLetter(req, res) {
 
 export async function handleListLetters(req, res) {
   if (!isAdmin(req)) {
-    sendJson(res, 401, { ok: false, error: "관리자 암호가 필요합니다." });
+    sendJson(res, 401, { ok: false, error: adminAuthError(req) });
     return;
   }
 
@@ -51,7 +57,7 @@ export async function handleListLetters(req, res) {
 
 export async function handlePatchLetter(req, res, id) {
   if (!isAdmin(req)) {
-    sendJson(res, 401, { ok: false, error: "관리자 암호가 필요합니다." });
+    sendJson(res, 401, { ok: false, error: adminAuthError(req) });
     return;
   }
 
@@ -77,7 +83,7 @@ export async function handlePatchLetter(req, res, id) {
 
 export async function handleDeleteLetter(req, res, id) {
   if (!isAdmin(req)) {
-    sendJson(res, 401, { ok: false, error: "관리자 암호가 필요합니다." });
+    sendJson(res, 401, { ok: false, error: adminAuthError(req) });
     return;
   }
 
