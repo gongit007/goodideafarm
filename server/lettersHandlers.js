@@ -39,7 +39,9 @@ export async function handleCreateLetter(req, res) {
     const list = await loadLetters();
     list.unshift(built.letter);
     await saveLetters(list);
-    notifyNewLetter(built.letter).catch(() => {});
+    notifyNewLetter(built.letter).catch((err) => {
+      console.error("[letter-notify]", err?.message || err);
+    });
     sendJson(res, 201, { ok: true, id: built.letter.id });
   } catch (error) {
     if (error.message === "KV_NOT_CONFIGURED") {

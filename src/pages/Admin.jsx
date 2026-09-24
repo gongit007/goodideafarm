@@ -37,7 +37,7 @@ async function api(path, { method = "GET", key, body } = {}) {
   return data;
 }
 
-function AdminBrix({ key, onSaved }) {
+function AdminBrix({ adminKey, onSaved }) {
   const { refresh } = useBrix();
   const [form, setForm] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -81,7 +81,7 @@ function AdminBrix({ key, onSaved }) {
     try {
       const data = await api("/api/brix", {
         method: "PUT",
-        key,
+        key: adminKey,
         body: form,
       });
       setMessage(`저장했습니다 · ${formatWhen(data.updatedAt)}`);
@@ -161,15 +161,15 @@ function AdminBrix({ key, onSaved }) {
   );
 }
 
-function AdminStats({ key }) {
+function AdminStats({ adminKey }) {
   const [stats, setStats] = useState(null);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    api("/api/stats", { key })
+    api("/api/stats", { key: adminKey })
       .then(setStats)
       .catch((err) => setError(err.message));
-  }, [key]);
+  }, [adminKey]);
 
   if (error) return <p className="store-hint">{error}</p>;
   if (!stats) return <p className="admin-empty">통계를 불러오는 중…</p>;
@@ -397,8 +397,8 @@ export default function Admin() {
               </>
             )}
 
-            {tab === "brix" && <AdminBrix key={key} onSaved={() => {}} />}
-            {tab === "stats" && <AdminStats key={key} />}
+            {tab === "brix" && <AdminBrix key={key} adminKey={key} onSaved={() => {}} />}
+            {tab === "stats" && <AdminStats key={key} adminKey={key} />}
           </>
         )}
       </section>

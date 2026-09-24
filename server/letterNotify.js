@@ -23,7 +23,9 @@ export async function notifyNewLetter(letter) {
     `관리: ${siteUrl("/admin")}`,
   ].join("\n");
 
-  const from = String(process.env.RESEND_FROM || "Good Idea Farm <onboarding@resend.dev>").trim();
+  const from = String(
+    process.env.RESEND_FROM || `${farm.name} <onboarding@resend.dev>`
+  ).trim();
 
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
@@ -35,8 +37,14 @@ export async function notifyNewLetter(letter) {
   });
 
   if (!res.ok) {
-    const detail = await res.text().catch(() => "");
-    throw new Error(`Resend failed: ${res.status} ${detail}`);
+    let detail = await res.text().catch(() => "");
+    try {
+      const parsed = JSON.parse(detail);
+      detail = parsed?.message || parsed?.error || detail;
+    } catch {
+      /* keep raw detail */
+    }
+    throw new Error(`Resend ${res.status}: ${detail}`);
   }
 
   return { ok: true };
