@@ -674,6 +674,56 @@ h3,
   font-weight: 600;
 }
 
+.privacy-page {
+  padding-bottom: 96px;
+}
+
+.privacy-block + .privacy-block {
+  margin-top: 36px;
+}
+
+.privacy-block h2 {
+  font-size: 1.35rem;
+  margin-bottom: 10px;
+}
+
+.privacy-block p,
+.privacy-block li {
+  color: var(--mute);
+  font-weight: 500;
+  line-height: 1.85;
+}
+
+.privacy-block ul {
+  margin: 8px 0 0 1.2em;
+}
+
+.privacy-block a {
+  border-bottom: 1px solid var(--line);
+}
+
+.privacy-note {
+  margin-top: 12px;
+  font-size: 0.95rem;
+}
+
+.consent-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 8px;
+  font-size: 0.98rem;
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+.consent-row input {
+  margin-top: 4px;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
 /* harvest notebook — not a black fruit row */
 .letter-body p,
 .split p,

@@ -1,14 +1,24 @@
 import { products } from "../src/data.js";
 
-export const ADMIN_KEY = String(process.env.ADMIN_KEY || "goodidea0706");
+function resolveAdminKey() {
+  const configured = String(process.env.ADMIN_KEY || "").trim();
+  if (configured) return configured;
+  if (process.env.VERCEL) return "";
+  return "goodidea0706";
+}
+
+export function getAdminKey() {
+  return resolveAdminKey();
+}
 
 export function itemName(id) {
   return products.find((p) => p.id === id)?.name || "제철 상담";
 }
 
 export function isAdmin(req) {
-  const key = req.headers["x-admin-key"] || "";
-  return key === ADMIN_KEY;
+  const key = getAdminKey();
+  if (!key) return false;
+  return (req.headers["x-admin-key"] || "") === key;
 }
 
 export function sendJson(res, status, body) {

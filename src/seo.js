@@ -213,6 +213,15 @@ const pages = {
       { name: "사진 출처", path: "/credits" },
     ],
   },
+  "/privacy": {
+    title: pageTitle("개인정보 처리방침"),
+    description: `${farm.name} 개인정보 수집·이용·보관 및 문의 방법을 안내합니다.`,
+    path: "/privacy",
+    crumbs: [
+      { name: "홈", path: "/" },
+      { name: "개인정보 처리방침", path: "/privacy" },
+    ],
+  },
 };
 
 export function seoForPath(pathname) {

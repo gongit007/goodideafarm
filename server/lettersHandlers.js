@@ -1,10 +1,4 @@
-import {
-  ADMIN_KEY,
-  buildLetter,
-  isAdmin,
-  readJsonBody,
-  sendJson,
-} from "./lettersCore.js";
+import { buildLetter, isAdmin, readJsonBody, sendJson } from "./lettersCore.js";
 import { loadLetters, saveLetters } from "./lettersStore.js";
 
 function storageError(res) {
@@ -106,4 +100,3 @@ export async function handleDeleteLetter(req, res, id) {
   }
 }
 
-export { ADMIN_KEY };

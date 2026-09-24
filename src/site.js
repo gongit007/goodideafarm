@@ -10,6 +10,7 @@ export const SITE_ROUTES = [
   "/brix",
   "/experience",
   "/contact",
+  "/privacy",
   "/credits",
 ];
 

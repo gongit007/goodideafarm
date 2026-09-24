@@ -21,9 +21,25 @@ ${SITE_ROUTES.map(
 `;
 }
 
+function siteOriginFromEnv() {
+  return String(process.env.VITE_SITE_URL || "").replace(/\/$/, "");
+}
+
+function withAbsoluteSiteUrls(html, origin) {
+  if (!origin) return html;
+  return html
+    .replace(/(<link rel="canonical" href=")\/(")/, `$1${origin}/$2`)
+    .replace(/(<link rel="alternate" hreflang="ko" href=")\/(")/, `$1${origin}/$2`)
+    .replace(/(<meta property="og:image" content=")\//g, `$1${origin}/`)
+    .replace(/(<meta name="twitter:image" content=")\//g, `$1${origin}/`);
+}
+
 function farmSeoPlugin() {
   return {
     name: "farm-seo-sitemap",
+    transformIndexHtml(html) {
+      return withAbsoluteSiteUrls(html, siteOriginFromEnv());
+    },
     configureServer(server) {
       server.middlewares.use((req, res, next) => {
         if (req.url?.split("?")[0] !== "/sitemap.xml") return next();
@@ -36,8 +52,17 @@ function farmSeoPlugin() {
     closeBundle() {
       const dist = path.resolve("dist");
       if (!fs.existsSync(dist)) return;
-      const origin = String(process.env.VITE_SITE_URL || "").replace(/\/$/, "");
+      const origin = siteOriginFromEnv();
       fs.writeFileSync(path.join(dist, "sitemap.xml"), sitemapXml(origin));
+      if (origin) {
+        const robotsPath = path.join(dist, "robots.txt");
+        if (fs.existsSync(robotsPath)) {
+          const robots = fs
+            .readFileSync(robotsPath, "utf8")
+            .replace(/^Sitemap: \/sitemap\.xml$/m, `Sitemap: ${origin}/sitemap.xml`);
+          fs.writeFileSync(robotsPath, robots);
+        }
+      }
     },
   };
 }

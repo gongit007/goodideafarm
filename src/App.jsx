@@ -12,6 +12,7 @@ import Experience from "./pages/Experience.jsx";
 import Contact from "./pages/Contact.jsx";
 import Admin from "./pages/Admin.jsx";
 import Credits from "./pages/Credits.jsx";
+import Privacy from "./pages/Privacy.jsx";
 import Seo from "./components/Seo.jsx";
 
 function ScrollTop() {
@@ -40,6 +41,7 @@ export default function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/credits" element={<Credits />} />
+          <Route path="/privacy" element={<Privacy />} />
         </Routes>
       </main>
       <Footer />

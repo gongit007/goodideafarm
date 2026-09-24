@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { farm, products } from "../data";
 import { PageBanner } from "../components/Ui";
 
@@ -9,6 +9,7 @@ export default function Contact() {
   const [sent, setSent] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [consent, setConsent] = useState(false);
   const [form, setForm] = useState({
     name: "",
     phone: "",
@@ -23,6 +24,10 @@ export default function Contact() {
 
   async function onSubmit(e) {
     e.preventDefault();
+    if (!consent) {
+      setError("개인정보 수집·이용에 동의해 주세요.");
+      return;
+    }
     setSaving(true);
     setError("");
     try {
@@ -103,8 +108,18 @@ export default function Contact() {
                   onChange={(e) => setForm({ ...form, message: e.target.value })}
                 />
               </label>
+              <label className="consent-row">
+                <input
+                  type="checkbox"
+                  checked={consent}
+                  onChange={(e) => setConsent(e.target.checked)}
+                />
+                <span>
+                  <Link to="/privacy">개인정보 처리방침</Link>에 동의합니다. (필수)
+                </span>
+              </label>
               {error && <p className="store-hint">{error}</p>}
-              <button className="ink-btn" type="submit" disabled={saving}>
+              <button className="ink-btn" type="submit" disabled={saving || !consent}>
                 {saving ? "보내는 중…" : "편지 보내기"}
               </button>
             </>

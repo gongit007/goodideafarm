@@ -34,6 +34,10 @@ export default function Footer() {
       </div>
       <p className="colo-copy">
         © {new Date().getFullYear()} {farm.name} · 시세는 작황에 따라 달라질 수 있습니다.{" "}
+        <Link to="/privacy" className="footer-quiet">
+          개인정보
+        </Link>
+        {" · "}
         <Link to="/credits" className="footer-quiet">
           사진 출처
         </Link>
