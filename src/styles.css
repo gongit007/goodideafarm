@@ -29,6 +29,8 @@ body,
 
 html {
   font-size: 17px;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
@@ -44,6 +46,7 @@ body {
   letter-spacing: 0;
   word-break: keep-all;
   overflow-wrap: break-word;
+  overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -104,6 +107,8 @@ h3,
   cursor: pointer;
   font-weight: 700;
   font-size: 1.02rem;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .ink-btn {
@@ -1599,6 +1604,10 @@ h3,
 }
 
 @media (max-width: 900px) {
+  .wrap {
+    width: min(1120px, calc(100% - 28px));
+  }
+
   .mast-nav,
   .stamp-btn {
     display: none;
@@ -1607,7 +1616,7 @@ h3,
   .mast-tick {
     flex-wrap: wrap;
     gap: 4px 10px;
-    padding: 8px 16px;
+    padding: 8px max(16px, env(safe-area-inset-right)) 8px max(16px, env(safe-area-inset-left));
     font-size: 0.72rem;
     letter-spacing: 0.03em;
   }
@@ -1616,9 +1625,26 @@ h3,
     display: none;
   }
 
+  .mast {
+    padding-top: env(safe-area-inset-top);
+  }
+
   .mast-bar {
     gap: 12px;
-    padding: 14px 16px;
+    padding: 14px max(16px, env(safe-area-inset-right)) 14px max(16px, env(safe-area-inset-left));
+  }
+
+  .fold-sheet.is-open {
+    max-height: min(78vh, 520px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: max(28px, env(safe-area-inset-bottom));
+  }
+
+  .fold-link {
+    font-size: 1.28rem;
+    padding: 14px 0;
+    min-height: 48px;
   }
 
   .wm-big {
@@ -1678,16 +1704,68 @@ h3,
     padding: 48px 24px 24px;
   }
 
+  .cover {
+    min-height: auto;
+    padding-bottom: 8px;
+  }
+
+  .cover-title {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    margin: 12px 0 20px;
+  }
+
+  .vert {
+    writing-mode: horizontal-tb;
+    height: auto;
+    font-size: 1.05rem;
+    letter-spacing: 0.12em;
+  }
+
   .cover-hangul {
-    font-size: 2.6rem;
+    font-size: clamp(2rem, 10vw, 2.75rem);
+    line-height: 1.15;
   }
 
   .cover-line {
-    font-size: 1.12rem;
+    font-size: 1.08rem;
+    max-width: none;
+  }
+
+  .cover-entity {
+    font-size: 0.98rem;
+    max-width: none;
+  }
+
+  .cover-who {
+    margin: 20px 0;
+    font-size: 1rem;
+  }
+
+  .cover-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .cover-actions .ink-btn,
+  .cover-actions .ghost-btn {
+    width: 100%;
+  }
+
+  .cover-plate {
+    margin: 0 0 24px;
+  }
+
+  .cover-plate img,
+  .cover-slides {
+    min-height: 0;
+    height: min(52vw, 280px);
   }
 
   .notebook {
-    padding: 28px 20px 36px;
+    padding: 24px 16px 32px;
+    margin: 24px auto 36px;
   }
 
   .cover,
@@ -1715,51 +1793,254 @@ h3,
     grid-row: auto;
   }
 
-  .vista {
-    grid-template-rows: none;
-  }
-
   .vista figure {
     height: 180px;
   }
 
   .cover-left {
-    padding: 36px 24px 12px;
+    padding: 28px max(16px, env(safe-area-inset-right)) 8px max(16px, env(safe-area-inset-left));
   }
 
   .cover-branch {
-    opacity: 0.35;
+    opacity: 0.25;
+    left: -90px;
   }
 
-  .cover-plate {
-    margin: 0 16px 28px;
-  }
-
-  .cover-plate img,
-  .cover-slides,
   .letter-photo img,
   .frame img,
   .chapter-visual img,
   .brand-spread img,
   .swatch img {
-    height: 240px;
+    height: min(56vw, 260px);
   }
 
-  .nb-list a,
-  .season-row {
-    grid-template-columns: 56px 36px 1fr auto;
+  .chapter {
+    width: calc(100% - 28px);
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 20px 0;
   }
 
-  .nb-thumb,
-  .season-row img {
+  .chapter-num {
+    font-size: 2.4rem;
+  }
+
+  .chapter-copy h3 {
+    font-size: 1.45rem;
+  }
+
+  .nb-list a {
+    grid-template-columns: 56px 1fr auto;
+    grid-template-areas:
+      "thumb no val"
+      "thumb name val";
+    gap: 4px 12px;
+    padding: 14px 0;
+    align-items: center;
+  }
+
+  .nb-list a .nb-thumb {
+    grid-area: thumb;
+    grid-row: span 2;
     width: 56px;
     height: 56px;
   }
 
+  .nb-list a .nb-no {
+    grid-area: no;
+    font-size: 0.92rem;
+  }
+
+  .nb-list a .nb-name {
+    grid-area: name;
+    font-size: 1.05rem;
+  }
+
+  .nb-list a strong {
+    grid-area: val;
+    font-size: 1.35rem;
+    align-self: center;
+  }
+
+  .nb-list.tall .note-block {
+    grid-template-columns: 64px 1fr auto;
+    grid-template-areas:
+      "img name val"
+      "img bar bar"
+      "img txt txt";
+    gap: 6px 12px;
+    padding: 16px 0;
+  }
+
+  .nb-list.tall .nb-thumb {
+    width: 64px;
+    height: 64px;
+  }
+
+  .nb-list.tall .nb-name {
+    font-size: 1.08rem;
+  }
+
+  .nb-list.tall strong {
+    font-size: 1.45rem;
+  }
+
+  .nb-list.tall p {
+    font-size: 0.98rem;
+  }
+
   .nb-bar,
-  .hide-sm,
-  .season-row span:nth-child(3) {
+  .hide-sm {
     display: none;
+  }
+
+  .season-row {
+    grid-template-columns: 64px 1fr;
+    grid-template-areas:
+      "img name"
+      "img season"
+      "img price";
+    gap: 4px 14px;
+    padding: 16px 0;
+    align-items: start;
+  }
+
+  .season-row img {
+    grid-area: img;
+    grid-row: 1 / 4;
+    width: 64px;
+    height: 64px;
+  }
+
+  .season-row .nb-no {
+    display: none;
+  }
+
+  .season-row span:nth-child(3) {
+    grid-area: name;
+  }
+
+  .season-row span:nth-child(4) {
+    grid-area: season;
+    font-size: 0.88rem;
+    color: var(--mute);
+    font-weight: 600;
+  }
+
+  .season-row span.hide-sm {
+    display: none;
+  }
+
+  .season-row span:last-child {
+    grid-area: price;
+    font-size: 0.98rem;
+    font-weight: 800;
+  }
+
+  .season-row strong {
+    font-size: 1.12rem;
+  }
+
+  .buy-card {
+    gap: 16px;
+    padding: 24px 0;
+  }
+
+  .buy-card-meta h2 {
+    font-size: 1.45rem;
+  }
+
+  .buy-card-meta h2 small {
+    display: block;
+    margin: 4px 0 0;
+  }
+
+  .buy-card-act {
+    align-items: stretch;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .buy-card-act .ink-btn,
+  .buy-card-act .ghost-btn {
+    width: 100%;
+  }
+
+  .buy-card-act .store-hint {
+    max-width: none;
+    text-align: left;
+  }
+
+  .buy-fork {
+    padding: 20px 18px 22px;
+  }
+
+  .spec {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .post-form,
+  .post-side {
+    padding: 20px 16px;
+  }
+
+  .post-form input,
+  .post-form select,
+  .post-form textarea {
+    font-size: 16px;
+  }
+
+  .banner {
+    padding: 40px max(16px, env(safe-area-inset-right)) 20px max(16px, env(safe-area-inset-left));
+  }
+
+  .banner h1,
+  .nb-head .nb-title {
+    font-size: clamp(1.75rem, 7.5vw, 2.35rem);
+  }
+
+  .ticket-main {
+    padding: 24px 20px;
+  }
+
+  .ticket-stub {
+    padding: 20px 16px;
+  }
+
+  .jeju-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .jeju-grid img {
+    height: 120px;
+  }
+
+  .vista figure {
+    height: 160px;
+  }
+
+  .colo-grid {
+    gap: 20px;
+    text-align: center;
+  }
+
+  .colo-nav {
+    justify-content: center;
+  }
+
+  .season-buy {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding-bottom: max(90px, calc(72px + env(safe-area-inset-bottom)));
+  }
+
+  .season-buy .ink-btn,
+  .season-buy .ghost-btn,
+  .end-cta .ink-btn,
+  .end-cta .ghost-btn {
+    width: 100%;
   }
 
   .chapter.is-flip .chapter-copy {
@@ -1819,6 +2100,102 @@ h3,
     gap: 4px;
   }
 
+  .postcard {
+    gap: 24px;
+    padding: 24px 0 max(72px, calc(56px + env(safe-area-inset-bottom)));
+  }
+
+  .buy-desk,
+  .season-table,
+  .end-cta {
+    padding-bottom: max(72px, calc(56px + env(safe-area-inset-bottom)));
+  }
+
+  .colophon {
+    padding-bottom: max(32px, env(safe-area-inset-bottom));
+  }
+
+  .colo-copy {
+    padding: 0 max(16px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-bottom))
+      max(16px, env(safe-area-inset-left));
+    font-size: 0.88rem;
+    line-height: 1.65;
+  }
+}
+
+@media (max-width: 480px) {
+  html {
+    font-size: 16px;
+  }
+
+  .wrap {
+    width: min(1120px, calc(100% - 24px));
+  }
+
+  .wm-big {
+    font-size: 1.28rem;
+  }
+
+  .cover-hangul {
+    font-size: clamp(1.85rem, 9.5vw, 2.35rem);
+  }
+
+  .cover-left {
+    padding: 24px max(14px, env(safe-area-inset-right)) 8px max(14px, env(safe-area-inset-left));
+  }
+
+  .notebook {
+    padding: 20px 14px 28px;
+    margin: 20px auto 28px;
+  }
+
+  .nb-list a {
+    grid-template-columns: 52px 1fr auto;
+    gap: 4px 10px;
+  }
+
+  .nb-list a .nb-thumb {
+    width: 52px;
+    height: 52px;
+  }
+
+  .jeju-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .jeju-grid img {
+    height: 160px;
+  }
+
+  .story-trio article {
+    grid-template-columns: 28px 1fr;
+  }
+
+  .ticket-main h2 {
+    font-size: 1.35rem;
+  }
+
+  .buy-card-meta h2 {
+    font-size: 1.28rem;
+  }
+
+  .buy-card-meta h2 small {
+    margin-left: 0;
+  }
+
+  .banner-photo {
+    height: 200px;
+  }
+
+  .banner.has-photo .banner-copy {
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+  }
+
+  .fold-sheet.is-open {
+    max-height: min(82vh, 560px);
+  }
 }
 
 .hp-field {
