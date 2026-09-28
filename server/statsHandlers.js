@@ -1,4 +1,4 @@
-import { adminAuthError, isAdmin, sendJson } from "./lettersCore.js";
+import { requireAdmin, sendJson } from "./lettersCore.js";
 import { loadLetters } from "./lettersStore.js";
 
 function groupByDay(letters) {
@@ -26,10 +26,7 @@ function groupByItem(letters) {
 }
 
 export async function handleGetStats(req, res) {
-  if (!isAdmin(req)) {
-    sendJson(res, 401, { ok: false, error: adminAuthError(req) });
-    return;
-  }
+  if (!(await requireAdmin(req, res))) return;
 
   try {
     const letters = await loadLetters();

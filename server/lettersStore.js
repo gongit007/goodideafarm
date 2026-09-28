@@ -1,32 +1,18 @@
 import fs from "node:fs";
 import path from "node:path";
+import { getKv, hasKv, storageMode } from "./kv.js";
 
 const DATA_DIR = path.resolve("data");
 const DATA_FILE = path.join(DATA_DIR, "letters.json");
-const KV_KEY = "goodidea:letters";
-
-function kvEnv() {
-  const url =
-    process.env.KV_REST_API_URL ||
-    process.env.UPSTASH_REDIS_REST_URL ||
-    process.env.UPSTASH_REDIS_REST_KV_REST_API_URL;
-  const token =
-    process.env.KV_REST_API_TOKEN ||
-    process.env.UPSTASH_REDIS_REST_TOKEN ||
-    process.env.UPSTASH_REDIS_REST_KV_REST_API_TOKEN;
-  return url && token ? { url, token } : null;
-}
-
-function hasKv() {
-  return Boolean(kvEnv());
-}
+const LEGACY_KV_KEY = "goodidea:letters";
+const KV_HASH = "goodidea:letters:v2";
 
 function ensureFile() {
   if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
   if (!fs.existsSync(DATA_FILE)) fs.writeFileSync(DATA_FILE, "[]\n", "utf8");
 }
 
-function loadLettersFromFile() {
+function loadFile() {
   ensureFile();
   try {
     const raw = JSON.parse(fs.readFileSync(DATA_FILE, "utf8"));
@@ -36,48 +22,98 @@ function loadLettersFromFile() {
   }
 }
 
-function saveLettersToFile(list) {
+function saveFile(list) {
   ensureFile();
   fs.writeFileSync(DATA_FILE, `${JSON.stringify(list, null, 2)}\n`, "utf8");
 }
 
-async function getKv() {
-  const env = kvEnv();
-  if (!env) throw new Error("KV_NOT_CONFIGURED");
-  const { createClient } = await import("@vercel/kv");
-  return createClient({ url: env.url, token: env.token });
+function assertStorage() {
+  if (!hasKv() && process.env.VERCEL) throw new Error("KV_NOT_CONFIGURED");
+}
+
+function parseRow(value) {
+  if (!value) return null;
+  if (typeof value === "object") return value;
+  try {
+    return JSON.parse(value);
+  } catch {
+    return null;
+  }
+}
+
+function sortNewestFirst(list) {
+  return list.sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)));
+}
+
+let migrated = false;
+
+async function kvReady() {
+  const kv = await getKv();
+  if (migrated) return kv;
+  const legacy = await kv.get(LEGACY_KV_KEY);
+  if (Array.isArray(legacy) && legacy.length) {
+    const fields = {};
+    for (const letter of legacy) {
+      if (letter?.id) fields[letter.id] = JSON.stringify(letter);
+    }
+    if (Object.keys(fields).length) await kv.hset(KV_HASH, fields);
+  }
+  if (legacy != null) await kv.del(LEGACY_KV_KEY);
+  migrated = true;
+  return kv;
 }
 
 export function lettersStorageMode() {
-  if (hasKv()) return "kv";
-  if (process.env.VERCEL) return "missing-kv";
-  return "file";
+  return storageMode();
 }
 
 export async function loadLetters() {
-  if (hasKv()) {
-    const kv = await getKv();
-    const list = await kv.get(KV_KEY);
-    return Array.isArray(list) ? list : [];
-  }
-
-  if (process.env.VERCEL) {
-    throw new Error("KV_NOT_CONFIGURED");
-  }
-
-  return loadLettersFromFile();
+  assertStorage();
+  if (!hasKv()) return loadFile();
+  const kv = await kvReady();
+  const all = (await kv.hgetall(KV_HASH)) || {};
+  return sortNewestFirst(Object.values(all).map(parseRow).filter(Boolean));
 }
 
-export async function saveLetters(list) {
-  if (hasKv()) {
-    const kv = await getKv();
-    await kv.set(KV_KEY, list);
+export async function addLetter(letter) {
+  assertStorage();
+  if (!hasKv()) {
+    const list = loadFile();
+    list.unshift(letter);
+    saveFile(list);
     return;
   }
+  const kv = await kvReady();
+  await kv.hset(KV_HASH, { [letter.id]: JSON.stringify(letter) });
+}
 
-  if (process.env.VERCEL) {
-    throw new Error("KV_NOT_CONFIGURED");
+export async function setLetterRead(id, read) {
+  assertStorage();
+  if (!hasKv()) {
+    const list = loadFile();
+    const letter = list.find((row) => row.id === id);
+    if (!letter) return null;
+    letter.read = read;
+    saveFile(list);
+    return letter;
   }
+  const kv = await kvReady();
+  const letter = parseRow(await kv.hget(KV_HASH, id));
+  if (!letter) return null;
+  letter.read = read;
+  await kv.hset(KV_HASH, { [id]: JSON.stringify(letter) });
+  return letter;
+}
 
-  saveLettersToFile(list);
+export async function deleteLetter(id) {
+  assertStorage();
+  if (!hasKv()) {
+    const list = loadFile();
+    const next = list.filter((row) => row.id !== id);
+    if (next.length === list.length) return false;
+    saveFile(next);
+    return true;
+  }
+  const kv = await kvReady();
+  return (await kv.hdel(KV_HASH, id)) > 0;
 }

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { farm, products } from "../data";
 import { PageBanner } from "../components/Ui";
@@ -15,9 +15,13 @@ export default function Contact() {
   const [form, setForm] = useState({
     name: "",
     phone: "",
-    item: preset,
+    item: "",
     message: "",
   });
+
+  useEffect(() => {
+    if (preset) setForm((prev) => ({ ...prev, item: preset }));
+  }, [preset]);
 
   const itemName = useMemo(
     () => products.find((p) => p.id === form.item)?.name || "제철 상담",
@@ -83,6 +87,8 @@ export default function Contact() {
                 이름
                 <input
                   required
+                  maxLength={80}
+                  autoComplete="name"
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
                 />
@@ -91,8 +97,12 @@ export default function Contact() {
                 연락처
                 <input
                   required
+                  type="tel"
                   inputMode="tel"
                   autoComplete="tel"
+                  maxLength={20}
+                  pattern="[0-9+\-\s\(\)\.]{9,20}"
+                  title="숫자와 하이픈(-)으로 적어 주세요. 예: 010-1234-5678"
                   placeholder="010-0000-0000"
                   value={form.phone}
                   onChange={(e) => setForm({ ...form, phone: e.target.value })}
@@ -117,6 +127,7 @@ export default function Contact() {
                 <textarea
                   rows="5"
                   required
+                  maxLength={2000}
                   placeholder="무게, 배송지, 방문 날짜를 적어 주세요."
                   value={form.message}
                   onChange={(e) => setForm({ ...form, message: e.target.value })}

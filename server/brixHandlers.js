@@ -1,10 +1,5 @@
 import { products } from "../src/data.js";
-import {
-  adminAuthError,
-  isAdmin,
-  readJsonBody,
-  sendJson,
-} from "./lettersCore.js";
+import { readJsonBody, requireAdmin, sendJson } from "./lettersCore.js";
 import { loadBrix, saveBrix } from "./brixStore.js";
 
 export function defaultBrixReadings() {
@@ -58,10 +53,7 @@ export async function handleGetBrix(_req, res) {
 }
 
 export async function handlePutBrix(req, res) {
-  if (!isAdmin(req)) {
-    sendJson(res, 401, { ok: false, error: adminAuthError(req) });
-    return;
-  }
+  if (!(await requireAdmin(req, res))) return;
 
   try {
     const body = await readJsonBody(req);

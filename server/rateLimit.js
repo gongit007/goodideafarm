@@ -1,34 +1,34 @@
-import { lettersStorageMode } from "./lettersStore.js";
+import { getKv, hasKv } from "./kv.js";
 
-async function getKv() {
-  const { createClient } = await import("@vercel/kv");
-  const url =
-    process.env.KV_REST_API_URL ||
-    process.env.UPSTASH_REDIS_REST_URL ||
-    process.env.UPSTASH_REDIS_REST_KV_REST_API_URL;
-  const token =
-    process.env.KV_REST_API_TOKEN ||
-    process.env.UPSTASH_REDIS_REST_TOKEN ||
-    process.env.UPSTASH_REDIS_REST_KV_REST_API_TOKEN;
-  if (!url || !token) return null;
-  return createClient({ url, token });
-}
+const ADMIN_FAIL_LIMIT = 5;
+const ADMIN_FAIL_WINDOW_SECONDS = 600;
 
 async function bump(key, ttlSeconds) {
   const kv = await getKv();
-  if (!kv) return 0;
   const count = await kv.incr(key);
   if (count === 1) await kv.expire(key, ttlSeconds);
   return count;
 }
 
+function firstHeader(req, name) {
+  const raw = req.headers[name];
+  const value = Array.isArray(raw) ? raw[0] : raw;
+  return String(value || "").split(",")[0].trim();
+}
+
+// Vercel overwrites x-real-ip / x-vercel-forwarded-for, so clients cannot spoof them.
 export function clientIp(req) {
-  const forwarded = String(req.headers["x-forwarded-for"] || "").split(",")[0].trim();
-  return forwarded || req.socket?.remoteAddress || "unknown";
+  return (
+    firstHeader(req, "x-real-ip") ||
+    firstHeader(req, "x-vercel-forwarded-for") ||
+    firstHeader(req, "x-forwarded-for") ||
+    req.socket?.remoteAddress ||
+    "unknown"
+  );
 }
 
 export async function checkLetterRateLimit(req, phone) {
-  if (lettersStorageMode() !== "kv") return null;
+  if (!hasKv()) return null;
 
   const ip = clientIp(req);
   const ipCount = await bump(`ratelimit:letter:ip:${ip}`, 3600);
@@ -46,3 +46,29 @@ export async function checkLetterRateLimit(req, phone) {
 
   return null;
 }
+
+function adminFailKey(req) {
+  return `ratelimit:admin:fail:${clientIp(req)}`;
+}
+
+export async function isAdminLocked(req) {
+  if (!hasKv()) return false;
+  const kv = await getKv();
+  const count = Number(await kv.get(adminFailKey(req))) || 0;
+  return count >= ADMIN_FAIL_LIMIT;
+}
+
+export async function recordAdminFailure(req) {
+  if (!hasKv()) return;
+  await bump(adminFailKey(req), ADMIN_FAIL_WINDOW_SECONDS);
+}
+
+export async function clearAdminFailures(req) {
+  if (!hasKv()) return;
+  const kv = await getKv();
+  await kv.del(adminFailKey(req));
+}
+
+export const ADMIN_LOCK_MESSAGE = `암호를 ${ADMIN_FAIL_LIMIT}번 틀려 ${
+  ADMIN_FAIL_WINDOW_SECONDS / 60
+}분 동안 잠겼습니다. 잠시 후 다시 시도해 주세요.`;

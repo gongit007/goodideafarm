@@ -35,9 +35,14 @@ function withAbsoluteSiteUrls(html, origin) {
 }
 
 function imageOptimizePlugin() {
+  let ssr = false;
   return {
     name: "farm-image-optimize",
+    configResolved(config) {
+      ssr = Boolean(config.build.ssr);
+    },
     async closeBundle() {
+      if (ssr) return;
       const distImages = path.resolve("dist/images");
       if (!fs.existsSync(distImages)) return;
       let sharp;
@@ -57,8 +62,12 @@ function imageOptimizePlugin() {
 }
 
 function farmSeoPlugin() {
+  let ssr = false;
   return {
     name: "farm-seo-sitemap",
+    configResolved(config) {
+      ssr = Boolean(config.build.ssr);
+    },
     transformIndexHtml(html) {
       return withAbsoluteSiteUrls(html, siteOriginFromEnv());
     },
@@ -72,6 +81,7 @@ function farmSeoPlugin() {
       });
     },
     closeBundle() {
+      if (ssr) return;
       const dist = path.resolve("dist");
       if (!fs.existsSync(dist)) return;
       const origin = siteOriginFromEnv();

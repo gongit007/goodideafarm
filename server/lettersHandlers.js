@@ -1,13 +1,7 @@
-import {
-  adminAuthError,
-  buildLetter,
-  isAdmin,
-  readJsonBody,
-  sendJson,
-} from "./lettersCore.js";
+import { buildLetter, readJsonBody, requireAdmin, sendJson } from "./lettersCore.js";
 import { notifyNewLetter } from "./letterNotify.js";
 import { checkLetterRateLimit } from "./rateLimit.js";
-import { loadLetters, saveLetters } from "./lettersStore.js";
+import { addLetter, deleteLetter, loadLetters, setLetterRead } from "./lettersStore.js";
 
 function storageError(res) {
   sendJson(res, 503, {
@@ -36,9 +30,7 @@ export async function handleCreateLetter(req, res) {
       return;
     }
 
-    const list = await loadLetters();
-    list.unshift(built.letter);
-    await saveLetters(list);
+    await addLetter(built.letter);
     try {
       await notifyNewLetter(built.letter);
     } catch (err) {
@@ -55,10 +47,7 @@ export async function handleCreateLetter(req, res) {
 }
 
 export async function handleListLetters(req, res) {
-  if (!isAdmin(req)) {
-    sendJson(res, 401, { ok: false, error: adminAuthError(req) });
-    return;
-  }
+  if (!(await requireAdmin(req, res))) return;
 
   try {
     const letters = await loadLetters();
@@ -73,22 +62,20 @@ export async function handleListLetters(req, res) {
 }
 
 export async function handlePatchLetter(req, res, id) {
-  if (!isAdmin(req)) {
-    sendJson(res, 401, { ok: false, error: adminAuthError(req) });
-    return;
-  }
+  if (!(await requireAdmin(req, res))) return;
 
   try {
     const body = await readJsonBody(req);
-    const list = await loadLetters();
-    const index = list.findIndex((row) => row.id === id);
-    if (index < 0) {
+    if (typeof body.read !== "boolean") {
+      sendJson(res, 400, { ok: false, error: "요청을 읽지 못했습니다." });
+      return;
+    }
+    const letter = await setLetterRead(id, body.read);
+    if (!letter) {
       sendJson(res, 404, { ok: false, error: "편지를 찾지 못했습니다." });
       return;
     }
-    if (typeof body.read === "boolean") list[index].read = body.read;
-    await saveLetters(list);
-    sendJson(res, 200, { ok: true, letter: list[index] });
+    sendJson(res, 200, { ok: true, letter });
   } catch (error) {
     if (error.message === "KV_NOT_CONFIGURED") {
       storageError(res);
@@ -99,20 +86,13 @@ export async function handlePatchLetter(req, res, id) {
 }
 
 export async function handleDeleteLetter(req, res, id) {
-  if (!isAdmin(req)) {
-    sendJson(res, 401, { ok: false, error: adminAuthError(req) });
-    return;
-  }
+  if (!(await requireAdmin(req, res))) return;
 
   try {
-    const list = await loadLetters();
-    const index = list.findIndex((row) => row.id === id);
-    if (index < 0) {
+    if (!(await deleteLetter(id))) {
       sendJson(res, 404, { ok: false, error: "편지를 찾지 못했습니다." });
       return;
     }
-    list.splice(index, 1);
-    await saveLetters(list);
     sendJson(res, 200, { ok: true });
   } catch (error) {
     if (error.message === "KV_NOT_CONFIGURED") {
@@ -122,4 +102,3 @@ export async function handleDeleteLetter(req, res, id) {
     sendJson(res, 500, { ok: false, error: "편지를 지우지 못했습니다." });
   }
 }
-

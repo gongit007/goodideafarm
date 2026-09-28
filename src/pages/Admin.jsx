@@ -233,7 +233,7 @@ function AdminStats({ adminKey }) {
 }
 
 export default function Admin() {
-  const [key, setKey] = useState(() => sessionStorage.getItem(KEY_NAME) || "");
+  const [key, setKey] = useState("");
   const [draft, setDraft] = useState("");
   const [tab, setTab] = useState("letters");
   const [letters, setLetters] = useState([]);
@@ -248,14 +248,15 @@ export default function Admin() {
   }
 
   useEffect(() => {
-    if (!key) return undefined;
-    loadLetters(key).catch((err) => {
+    const saved = sessionStorage.getItem(KEY_NAME) || "";
+    if (!saved) return;
+    setKey(saved);
+    loadLetters(saved).catch((err) => {
       sessionStorage.removeItem(KEY_NAME);
       setKey("");
       setReady(false);
       setError(err.message || "암호가 맞지 않습니다.");
     });
-    return undefined;
   }, []);
 
   async function onLogin(e) {
