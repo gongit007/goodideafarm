@@ -216,8 +216,8 @@ export const heroSlides = [
   },
   {
     src: "/images/farm-01.jpg",
-    alt: "수확 전, 작익은 감귤밭",
-    caption: "수확 전, 작익은 감귤밭",
+    alt: "수확 전, 잘 익은 감귤밭",
+    caption: "수확 전, 잘 익은 감귤밭",
   },
   {
     src: "/images/farm-04.jpg",
