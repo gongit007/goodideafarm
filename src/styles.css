@@ -679,6 +679,25 @@ h3,
   font-weight: 600;
 }
 
+.credits-list code {
+  font-family: var(--sans);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.credits-list a {
+  color: var(--tangerine);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.credits-mod {
+  font-style: normal;
+  font-size: 0.88rem;
+  color: var(--mute);
+}
+
 .privacy-page {
   padding-bottom: 96px;
 }
